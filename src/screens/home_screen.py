@@ -10,6 +10,7 @@ def home_screen():
     style_base_layout()
 
     col1, col2 = st.columns(2, gap="large")
+    
     with col1:
         st.header("I'm Student")
         st.image("https://static.vecteezy.com/system/resources/thumbnails/008/154/360/small/student-logo-vector.jpg", width=120)

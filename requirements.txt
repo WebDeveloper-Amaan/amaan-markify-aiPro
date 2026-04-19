@@ -22,3 +22,9 @@ segno
 
 # IMAGE PROCESSING
 pillow
+
+# AUDIO PROCESSING
+librosa
+
+# VOICE RECOGNITION
+resemblyzer
