@@ -312,9 +312,9 @@ def teacher_screen_login():
     st.space()
 
 
-    teacher_username = st.text_input("Enter username", placeholder='ananyaroy')
+    teacher_username = st.text_input("Enter username", placeholder='Enter your username')
 
-    teacher_pass = st.text_input("Enter password", type='password', placeholder="Enter password")
+    teacher_pass = st.text_input("Enter password", type='password', placeholder="Enter your password")
 
     st.divider()
 
@@ -328,7 +328,7 @@ def teacher_screen_login():
                 time.sleep(1)
                 st.rerun()
             else:
-                st.error("Invalid username and password combo")
+                st.error("Invalid username or password")
 
     with btnc2:
         if st.button('Register Instead', type="primary", icon=':material/passkey:', width='stretch'):
@@ -370,13 +370,13 @@ def teacher_screen_register():
     st.space()
 
     
-    teacher_username = st.text_input("Enter username", placeholder='ananyaroy')
+    teacher_username = st.text_input("Enter username", placeholder='Enter your username')
 
-    teacher_name = st.text_input("Enter name", placeholder='Ananya Roy')
+    teacher_name = st.text_input("Enter name", placeholder='Enter your name')
 
-    teacher_pass = st.text_input("Enter password", type='password', placeholder="Enter password")
+    teacher_pass = st.text_input("Enter password", type='password', placeholder="Enter your password")
 
-    teacher_pass_confirm = st.text_input("Confirm your password", type='password', placeholder="Enter password")
+    teacher_pass_confirm = st.text_input("Confirm your password", type='password', placeholder="Confirm your password")
 
     st.divider()
 
