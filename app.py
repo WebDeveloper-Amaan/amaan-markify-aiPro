@@ -9,6 +9,8 @@ def main():
     st.set_page_config(
         page_title='Markify – AI-Based Smart Attendance System ',
         page_icon= "https://skoolapp.com/wp-content/uploads/2018/03/website-attandence-features-page.png"
+
+
     )
         
     if 'login_type' not in st.session_state:
