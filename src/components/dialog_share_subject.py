@@ -6,8 +6,8 @@ import io
 
 @st.dialog("Share Class Link")
 def share_subject_dialog(subject_name, subject_code):
-    # app_domain = "aipro-main.streamlit.app"
-    app_domain = "http://localhost:8501"
+    app_domain = "amaan-markify-ai.streamlit.app"
+    # app_domain = "http://localhost:8501"
     join_url = f"{app_domain}/?join-code={subject_code}"
 
     st.header("Scan to Join")

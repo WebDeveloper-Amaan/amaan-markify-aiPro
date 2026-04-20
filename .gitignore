@@ -1,3 +1,5 @@
+streamlit
+
 .env
 .vscode
 
@@ -7,7 +9,6 @@ __pycache__/
 
 venv/
 
-.streamlit/
 
 dist/
 build/
