@@ -36,7 +36,7 @@ def get_face_embeddings(image_np):
     return encodings
 
 
-@st.cache_resource
+# @st.cache_resource
 def get_trained_model():
     X = []
     y = []
@@ -100,7 +100,7 @@ def predict_attendance(class_image_np):
 
         best_match_score = np.linalg.norm(student_embedding - encoding)
 
-        resemblance_threshold = 0.6
+        resemblance_threshold = 0.5
 
         if best_match_score <= resemblance_threshold:
             detected_student[predicted_id] = True
