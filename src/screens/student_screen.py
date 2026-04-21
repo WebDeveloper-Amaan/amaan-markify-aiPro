@@ -96,17 +96,41 @@ def student_screen():
     with c1:
         header_dashboard()
     with c2:
-        # st.subheader(f"""Welcome, Student """)
-        if st.button("Logout", type='secondary', key='loginbackbtn', shortcut="control+backspace"):
-            st.session_state['login_type'] = False
+        if st.button("Go back to Home", type='secondary', key='loginbackbtn', shortcut="control+backspace"):
+            st.session_state['login_type'] = None
             st.rerun()
 
     st.header("Login using Face ID" , text_alignment='center')
     st.space()
+    
+    with st.expander("ℹ️ Camera not working? Click here for help", expanded=False):
+        st.markdown("""
+        **If camera is not showing:**
+        
+        1. 🔒 **Allow camera permission** in your browser
+        2. 🔄 **Refresh the page** after allowing permission
+        3. 🔗 Make sure you're using **HTTPS** (secure connection)
+        4. 🌐 **Supported browsers**: Chrome, Edge, Safari, Firefox
+        
+        **How to enable camera:**
+        - **Chrome/Edge**: Click the 🔒 lock icon in address bar → Camera → Allow
+        - **Firefox**: Click the 🔒 icon → Permissions → Camera → Allow
+        - **Safari**: Safari menu → Settings → Websites → Camera → Allow
+        
+        💡 **Tip**: After allowing permission, refresh this page!
+        """)
+    
     st.space()
 
     show_registration = False
-    photo_source = st.camera_input("Position your face in the center")
+    show_pin_verification = False
+    matched_student = None
+    
+    try:
+        photo_source = st.camera_input("📸 Position your face in the center")
+    except Exception as e:
+        st.error("⚠️ Camera access failed! Please check permissions above.")
+        photo_source = None
 
     if photo_source:
         img = np.array(Image.open(photo_source))
@@ -124,21 +148,56 @@ def student_screen():
                     student = next((s for s in all_students if s['student_id']==student_id), None)
 
                     if student:
-                        st.session_state.is_logged_in = True
-                        st.session_state.user_role = 'student'
-                        st.session_state.student_data = student
-                        st.toast(f'Welcome Back {student['name']}')
-                        time.sleep(1)
-                        st.rerun()
+                        matched_student = student
+                        show_pin_verification = True
                 else:
                     st.info('Face not recognized! You might be a new student!')
                     show_registration = True
+    
+    if show_pin_verification and matched_student:
+        st.success(f"✅ Face matched: {matched_student['name']}")
+        
+        @st.dialog("🔐 Security Verification", width="small")
+        def pin_verification_dialog():
+            st.write(f"Welcome back, **{matched_student['name']}**!")
+            st.info("Please enter your 4-digit PIN to continue")
+            
+            pin_input = st.text_input('Security PIN', type='password', placeholder='Enter PIN', max_chars=4, label_visibility='collapsed', key='pin_input_dialog')
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button('Cancel', type='secondary', width='stretch'):
+                    st.rerun()
+            with col2:
+                if st.button('Verify', type='primary', width='stretch', use_container_width=True):
+                    if pin_input == matched_student.get('security_pin'):
+                        st.session_state.is_logged_in = True
+                        st.session_state.user_role = 'student'
+                        st.session_state.student_data = matched_student
+                        st.toast(f'Welcome Back {matched_student['name']}')
+                        time.sleep(1)
+                        st.rerun()
+                    else:
+                        st.error('❌ Incorrect PIN! Please try again.')
+            
+            # Auto-submit on Enter key
+            if pin_input and len(pin_input) == 4:
+                if pin_input == matched_student.get('security_pin'):
+                    st.session_state.is_logged_in = True
+                    st.session_state.user_role = 'student'
+                    st.session_state.student_data = matched_student
+                    st.toast(f'Welcome Back {matched_student['name']}')
+                    time.sleep(1)
+                    st.rerun()
+        
+        pin_verification_dialog()
          
     
     if show_registration:
         with st.container(border=True):
             st.header('Register new Profile')
             new_name = st.text_input("Enter your name", placeholder='E.g. Amaan Ahmed')
+            new_pin = st.text_input("Create 4-digit Security PIN", type='password', placeholder='E.g. 1234', max_chars=4)
 
             st.subheader('Optional : Voice Enrollment')
             st.info("Enroll your for voice only attendance")
@@ -152,7 +211,7 @@ def student_screen():
                 st.error('Audio Data failed!')
 
             if st.button('Create Account', type='primary'):
-                if new_name:
+                if new_name and new_pin and len(new_pin) == 4 and new_pin.isdigit():
                     with st.spinner('Creating profile..'):
                         img = np.array(Image.open(photo_source))
                         encodings= get_face_embeddings(img)
@@ -163,7 +222,7 @@ def student_screen():
                             if audio_data:
                                 voice_emb = get_voice_embedding(audio_data.read())
 
-                            response_data = create_student(new_name, face_embedding=face_emb, voice_embedding=voice_emb)
+                            response_data = create_student(new_name, face_embedding=face_emb, voice_embedding=voice_emb, security_pin=new_pin)
 
                             if response_data:
                                 train_classifier()
@@ -177,7 +236,7 @@ def student_screen():
                             st.error('Couldnt capture your facial features for registration')
 
                 else:
-                    st.warning('Please enter your name!')
+                    st.warning('Please enter your name and a valid 4-digit PIN!')
 
 
         
